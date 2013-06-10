@@ -8,6 +8,12 @@ class LambdaParser extends StdTokenParsers {
   val lexical = new StdLexical
   lexical.delimiters ++= Seq("λ", ".", "(", ")", "\\")
 
+  def expr        = lambda | application | variable | parens
+  def lambda      = "λ" ~ variable ~ "." ~ expr
+  def application = expr ~ expr
+  def variable    = ident
+  def parens      = "(" ~ expr ~ ")"
+
   def parse(str: String): ParseResult[String] = {
     val tokens = new lexical.Scanner(str)
     phrase(ident)(tokens)
