@@ -6,7 +6,7 @@ import scala.util.parsing.combinator.PackratParsers
 
 class LambdaParser extends StdTokenParsers with PackratParsers {
   type Tokens = StdLexical
-  val lexical = new StdLexical
+  val lexical = new LambdaLexer
   lexical.delimiters ++= Seq("λ", ".", "(", ")", "\\")
 
   type P[+T] = PackratParser[T]
@@ -22,4 +22,8 @@ class LambdaParser extends StdTokenParsers with PackratParsers {
     val tokens = new lexical.Scanner(str)
     phrase(expr)(tokens)
   }
+}
+
+class LambdaLexer extends StdLexical {
+  override def letter = elem("letter", c => c.isLetter && c != 'λ')
 }
