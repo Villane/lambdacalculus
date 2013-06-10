@@ -2,17 +2,21 @@ package lambda
 
 import scala.util.parsing.combinator.syntactical.StdTokenParsers
 import scala.util.parsing.combinator.lexical.StdLexical
+import scala.util.parsing.combinator.PackratParsers
 
-class LambdaParser extends StdTokenParsers {
+class LambdaParser extends StdTokenParsers with PackratParsers {
   type Tokens = StdLexical
   val lexical = new StdLexical
   lexical.delimiters ++= Seq("λ", ".", "(", ")", "\\")
 
-  def expr: Parser[Expr] = lambda | application | variable | parens
-  def lambda             = "λ" ~> variable ~ "." ~ expr ^^ { case v ~ "." ~ e  => Lambda(v, e) }
-  def application        = expr ~ expr                  ^^ { case left ~ right => Apply(left, right) }
-  def variable           = ident                        ^^ Var
-  def parens             = "(" ~> expr <~ ")"
+  type P[+T] = PackratParser[T]
+  lazy val expr: P[Expr]         = lambda | application | variable | parens
+  lazy val lambda: P[Lambda]     = "λ" ~> variable ~ "." ~ expr ^^
+                                   { case v ~ "." ~ e  => Lambda(v, e) }
+  lazy val application: P[Apply] = expr ~ expr ^^
+                                   { case left ~ right => Apply(left, right) }
+  lazy val variable: P[Var]      = ident ^^ Var
+  lazy val parens: P[Expr]       = "(" ~> expr <~ ")"
 
   def parse(str: String): ParseResult[Expr] = {
     val tokens = new lexical.Scanner(str)
