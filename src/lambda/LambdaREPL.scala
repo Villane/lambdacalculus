@@ -1,14 +1,16 @@
 package lambda
 
 object LambdaREPL {
+  val parser = new LambdaParser()
 
   def main(args: Array[String]) {
-    val parser = new LambdaParser()
-    import parser.{Success, NoSuccess}
-    parser.parse("λx.x") match {
-      case Success(expr, _) => println("Parsed: " + expr)
-      case err: NoSuccess   => println(err)
+    while (true) {
+      val exprSrc = readLine("λ> ")
+      import parser.{Success, NoSuccess}
+      parser.parse(exprSrc) match {
+        case Success(expr, _) => println("Parsed: " + expr)
+        case err: NoSuccess   => println(err)
+      }
     }
   }
-
 }
