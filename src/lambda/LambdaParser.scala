@@ -11,13 +11,14 @@ class LambdaParser extends StdTokenParsers with PackratParsers {
 
   type P[+T] = PackratParser[T]
   lazy val expr: P[Expr]         = application | notApp
-  lazy val notApp                = variable | parens | lambda
+  lazy val notApp                = variable | number | parens | lambda
   lazy val lambda: P[Lambda]     = positioned(("λ" | "\\") ~> variable ~ "." ~ expr ^^
                                    { case v ~ "." ~ e  => Lambda(v, e) })
   lazy val application: P[Apply] = positioned(expr ~ notApp ^^
                                    { case left ~ right => Apply(left, right) })
   lazy val variable: P[Var]      = positioned(ident ^^ Var.apply)
   lazy val parens: P[Expr]       = "(" ~> expr <~ ")"
+  lazy val number: P[Lambda]     = numericLit ^^ { case n => CNumber(n.toInt) }
 
   def parse(str: String): ParseResult[Expr] = {
     val tokens = new lexical.Scanner(str)

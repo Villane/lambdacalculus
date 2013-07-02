@@ -27,6 +27,7 @@ class Evaluation(debug: Boolean = false) {
   def isValue(term: Expr): Boolean = term match {
     case _: Lambda  => true
     case _: Var     => true
+    case CNumber(_) => true
     case _          => false
   }
 

@@ -19,6 +19,9 @@ object Library {
     add  = λa.λb.λs.λz. a s (b s z);
     mul  = λa.λb.λs. a (b s);
     pow  = λa.λb. b a;
+
+    bool   = λb. b T F; // magic values T & F are recognized as booleans
+    number = λn. n S Z; // magic values S & Z are recognized as numbers
   """
 
   def load() = {
