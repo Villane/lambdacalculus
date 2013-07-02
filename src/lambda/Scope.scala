@@ -35,10 +35,9 @@ class Binder(val defs: Map[String, Expr]) {
       (parent closestBinding name) match {
         case Some(scope) =>
           v.copy(scope = scope)
-        case None if (name(0).isUpper) =>
+        case None if name(0).isUpper =>
           v.copy(scope = Scope.TOP)
         case None =>
-          if (name(0).isUpper)
           messages += Message(v.pos, "Unbound variable: " + name)
           v
       }
