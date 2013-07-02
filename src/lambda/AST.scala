@@ -1,6 +1,8 @@
 package lambda
 
-sealed trait Expr
+import scala.util.parsing.input.Positional
+
+sealed trait Expr extends Positional
 
 case class Lambda(arg: Var, body: Expr) extends Expr
 

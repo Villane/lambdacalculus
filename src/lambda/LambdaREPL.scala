@@ -13,7 +13,15 @@ object LambdaREPL {
       val exprSrc = readLine("λ> ")
       import parser.{Success, NoSuccess}
       parser.parse(exprSrc) match {
-        case Success(expr, _) => println(pretty(eval(bind(expr))))
+        case Success(expr, _) =>
+          val bound = bind(expr)
+          if (bind.messages.isEmpty)
+            println(pretty(eval(bound)))
+          else {
+            for (m <- bind.messages)
+              println(m.pos.longString + m.msg)
+            bind.messages.clear()
+          }
         case err: NoSuccess   => println(err)
       }
     }

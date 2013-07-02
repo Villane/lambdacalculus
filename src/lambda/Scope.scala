@@ -1,5 +1,7 @@
 package lambda
 
+import scala.collection.mutable.ListBuffer
+
 object Scope {
   var id = 0
   def nextId = { val i = id; id += 1; i }
@@ -19,6 +21,7 @@ class Scope(val parent: Option[Scope], val boundNames: Set[String]) {
 }
 
 class Binder() {
+  val messages = ListBuffer[Message]()
 
   def apply(term: Expr) = bind(term, Scope.TOP)
 
@@ -29,7 +32,9 @@ class Binder() {
     case v @ Var(name, _) =>
       (parent closestBinding name) match {
         case Some(scope)             => v.copy(scope = scope)
-        case None                    => sys.error("Undefined variable: " + name)
+        case None                    =>
+          messages += Message(v.pos, "Unbound variable: " + name)
+          v
       }
     case Apply(fun, arg) =>
       Apply(bind(fun, parent), bind(arg, parent))
