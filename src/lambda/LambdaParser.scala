@@ -7,7 +7,7 @@ import scala.util.parsing.combinator.PackratParsers
 class LambdaParser extends StdTokenParsers with PackratParsers {
   type Tokens = StdLexical
   val lexical = new LambdaLexer
-  lexical.delimiters ++= Seq("\\", "λ", ".", "(", ")", "\\")
+  lexical.delimiters ++= Seq("\\", "λ", ".", "(", ")", "=", ";")
 
   type P[+T] = PackratParser[T]
   lazy val expr: P[Expr]         = application | notApp
@@ -23,6 +23,15 @@ class LambdaParser extends StdTokenParsers with PackratParsers {
     val tokens = new lexical.Scanner(str)
     phrase(expr)(tokens)
   }
+
+  lazy val defs = repsep(defn, ";") <~ opt(";") ^^ Map().++
+  lazy val defn = ident ~ "=" ~ expr ^^ { case id ~ "=" ~ t => id -> t }
+
+  def definitions(str: String): ParseResult[Map[String, Expr]] = {
+    val tokens = new lexical.Scanner(str)
+    phrase(defs)(tokens)
+  }
+
 }
 
 class LambdaLexer extends StdLexical {

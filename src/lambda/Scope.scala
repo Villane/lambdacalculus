@@ -20,7 +20,7 @@ class Scope(val parent: Option[Scope], val boundNames: Set[String]) {
 
 }
 
-class Binder() {
+class Binder(val defs: Map[String, Expr]) {
   val messages = ListBuffer[Message]()
 
   def apply(term: Expr) = bind(term, Scope.TOP)
@@ -29,10 +29,13 @@ class Binder() {
     case Lambda(arg, body) =>
       val λScope = new Scope(Some(parent), Set(arg.name))
       Lambda(arg.copy(scope = λScope), bind(body, λScope))
+    case v @ Var(name, _) if (defs contains name) =>
+      bind(defs(name), parent)
     case v @ Var(name, _) =>
       (parent closestBinding name) match {
-        case Some(scope)             => v.copy(scope = scope)
-        case None                    =>
+        case Some(scope) =>
+          v.copy(scope = scope)
+        case None =>
           messages += Message(v.pos, "Unbound variable: " + name)
           v
       }

@@ -3,7 +3,7 @@ package eval
 
 class Substitution(argV: Var, replacement: Expr) {
 
-  val binder = new Binder()
+  val binder = new Binder(Map())
 
   def apply(term: Expr): Expr = term match {
     case Var(argV.name, argV.scope) => binder.bind(replacement, argV.scope.parent.get)
