@@ -6,7 +6,7 @@ object LambdaREPL {
   val parser = new LambdaParser()
   val pretty = new PrettyPrinter()
   var bind = new Binder(Library.load())
-  val eval = new Evaluation(debug = true)
+  val eval = new Evaluation(debug = false)
 
   def main(args: Array[String]) {
     while (true) {

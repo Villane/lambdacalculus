@@ -22,6 +22,16 @@ object Library {
 
     bool   = λb. b T F; // magic values T & F are recognized as booleans
     number = λn. n S Z; // magic values S & Z are recognized as numbers
+
+    pred_z = pair 0 0;
+    pred_s = \p. pair (second p) (succ (second p));
+    pred   = \n. first (n pred_s pred_z);
+
+    iszero = λn. n (\x.false) true;
+    eq     = λa.λb. and (iszero (a pred b)) (iszero (b pred a));
+
+    fix  = λf.(λw.f (λv.w w v)) (λw.f (λv.w w v));
+    fact = fix (λfct. λn. ((iszero n) (λx. 1) (λx.(mul n (fct (pred n))))) \o.o);
   """
 
   def load() = {
